@@ -3,12 +3,24 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                sh '''
+                    docker run --rm \
+                      -v "$WORKSPACE:/app" \
+                      -w /app \
+                      maven:3.9.9-eclipse-temurin-17 \
+                      mvn -B -DskipTests clean package
+                '''
             }
         }
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh '''
+                    docker run --rm \
+                      -v "$WORKSPACE:/app" \
+                      -w /app \
+                      maven:3.9.9-eclipse-temurin-17 \
+                      mvn -B test
+                '''
             }
             post {
                 always {
